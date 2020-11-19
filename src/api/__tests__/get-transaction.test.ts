@@ -20,7 +20,7 @@ describe('Get transaction', () => {
           amount: 1234,
         };
         beforeEach( async() => {
-          await storeTransaction(transaction.transaction_id, transaction.account_id, transaction.amount);
+          await storeTransaction(transaction);
         });
         it('should return 200', async () => {
           const res = await server.inject({method: 'GET', url: `/transaction/${transaction.transaction_id}`});

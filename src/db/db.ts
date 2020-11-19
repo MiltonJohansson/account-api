@@ -4,17 +4,16 @@ import { Database } from 'sqlite/build/Database';
 
 let db: Database;
 
-async function getOrCreateDb(): Promise<Database> {
+export async function getOrCreateDb(): Promise<Database> {
   if(db) {
     return db;
   }
   try {
     db = await open({
       filename: '/tmp/database.db',
-      driver: sqlite3.cached.Database
+      driver: sqlite3.Database
     });
-    await db.exec('DROP TABLE tbl');
-    await db.exec('CREATE TABLE tbl (transaction_id TEXT, account_id TEXT, amount NUMBER, balance NUMBER, number_of_transactions NUMBER, created_at NUMBER)');
+    await db.exec('CREATE TABLE tbl (transaction_id type UNIQUE, account_id TEXT, amount NUMBER, balance NUMBER, number_of_transactions NUMBER, created_at NUMBER)');
     return db;
   } catch (error) {
     throw new Error('Failed to create DB');
@@ -25,7 +24,15 @@ export async function disconnect() {
   if(!db) {
     return;
   }
+  await db.exec('DROP TABLE tbl');
   await db.close();
+}
+
+export async function clearAllRows() {
+  if(!db) {
+    return;
+  }
+  await db.exec('DELETE FROM tbl');
 }
 
 export interface StoredInterface {
@@ -37,19 +44,26 @@ export interface StoredInterface {
 }
 
 
-export async function storeTransaction(transaction_id: string, account_id: string, amount: number): Promise<void> {
+interface TransactionToBeStored {
+  transaction_id: string;
+  account_id: string;
+  amount: number;
+}
+
+export async function storeTransaction({ transaction_id, account_id, amount }: TransactionToBeStored): Promise<void> {
   try {
     const query = 'INSERT INTO tbl VALUES (?, ?, ?, ?, ?, ?)';
     const last_transaction = await getLatestTransaction(account_id);
-    if (last_transaction && last_transaction.transaction_id === transaction_id) {
-      // Transaction is already stored
-      return;
-    }
     const new_balance = last_transaction ? last_transaction.amount + amount : amount;
     const new_number_of_transactions = last_transaction ? last_transaction.number_of_transactions + 1 : 1;
     const created_at = new Date().getTime();
     await (await getOrCreateDb()).run(query, [transaction_id, account_id, amount, new_balance, new_number_of_transactions, created_at]);
   } catch (error) {
+    if(error.errno === 19) {
+      // Duplicate error, just ignore
+      console.log('Transaction already stored');
+      return;
+    }
     throw new Error(error);
   }
 }

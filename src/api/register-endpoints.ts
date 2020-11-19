@@ -68,7 +68,11 @@ const handlePing = async (_req: Request, h: ResponseToolkit) => {
 
 const handlePostAmount = async ({payload, headers}: Request, h: ResponseToolkit) => {
   try {
-    await storeTransaction(headers['transaction-id'], (payload as any).account_id, (payload as any).amount);
+    await storeTransaction({
+      transaction_id: headers['transaction-id'],
+      account_id: (payload as any).account_id,
+      amount: (payload as any).amount
+    });
     return h.response({}).code(200);
   }
   catch (error) {
@@ -98,10 +102,10 @@ const handleGetAccountBalance = async ({params: {account_id}}: Request, h: Respo
 
 const handleGetMaximumTransactionVolume = async (_req: Request, h: ResponseToolkit) => {
     try {
-      const accounts_with_maximum_transactions = await getMaximumNumberOfTransactions();
+      const maximum_transactions = await getMaximumNumberOfTransactions();
       const response = {
-        maxVolume: accounts_with_maximum_transactions[0].number_of_transactions,
-        accounts: accounts_with_maximum_transactions.map((transaction: any) => transaction.account_id)
+        maxVolume: maximum_transactions[0].number_of_transactions,
+        accounts: maximum_transactions.map((transaction: any) => transaction.account_id)
       };
       return h.response(response).code(200);
     }
