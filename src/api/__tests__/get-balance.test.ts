@@ -19,9 +19,9 @@ describe('Get balance', () => {
       };
       describe('with two identical transactions and one deducting', () => {
         beforeEach(async () => {
-          await storeTransaction(transaction.transaction_id, transaction.account_id, transaction.amount);
-          await storeTransaction(transaction.transaction_id, transaction.account_id, transaction.amount);
-          await storeTransaction('1943f961-a733-43cf-ba3d-905a5856f6da', transaction.account_id, -2);
+          await storeTransaction({ transaction_id: transaction.transaction_id, account_id: transaction.account_id, amount: transaction.amount });
+          await storeTransaction({ transaction_id: transaction.transaction_id, account_id: transaction.account_id, amount: transaction.amount });
+          await storeTransaction({ transaction_id: '1943f961-a733-43cf-ba3d-905a5856f6da', account_id: transaction.account_id, amount: -2 });
         });
         it('should return 200 and balance deducted from first transaction', async () => {
           const first_result = await server.inject({method: 'GET', url: `/balance/${transaction.account_id}`});
