@@ -1,11 +1,13 @@
 import { startService, stopService } from '../../application';
-import { storeTransaction } from '../../db/db';
+import {clearAllRows, getOrCreateDb, storeTransaction} from '../../db/db';
 import { Server } from "@hapi/hapi";
 
 describe('Get balance', () => {
   let server: Server;
   beforeAll(async () => {
     server = await startService();
+    await getOrCreateDb();
+    await clearAllRows();
   });
   afterAll(async () => {
     await stopService();

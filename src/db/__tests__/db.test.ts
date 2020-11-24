@@ -17,8 +17,8 @@ describe('Test database', () => {
     await disconnect();
   });
   describe('Test database', () => {
-    const account_one = '7945f961-a733-43cf-ba3d-905a5456f6da';
-    const account_two = '7945f761-a733-43cf-ba3d-905a5453f6da';
+    const account_one = '7945f961-a733-43cf-ba3d-915a5456f6da';
+    const account_two = '7945f761-a733-43cf-ba3d-905a5423f6da';
     const transaction_one_account_one = {
       transaction_id: '7943f961-a733-43cf-ba3d-905a5426f6da',
       account_id: account_one,

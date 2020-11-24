@@ -1,12 +1,14 @@
 import { Server } from '@hapi/hapi';
 import { omit } from 'lodash';
 import { startService, stopService } from '../../application';
-import { storeTransaction } from '../../db/db';
+import {clearAllRows, getOrCreateDb, storeTransaction} from '../../db/db';
 
 describe('Get transaction', () => {
   let server: Server;
   beforeAll(async () => {
     server = await startService();
+    await getOrCreateDb();
+    await clearAllRows();
   });
   afterAll(async () => {
     await stopService();
