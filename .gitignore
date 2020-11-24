@@ -1,7 +1,3 @@
 node_modules
 build
 .idea
-cypress/videos
-cypress/plugins
-cypress/screenshots
-cypress/support
