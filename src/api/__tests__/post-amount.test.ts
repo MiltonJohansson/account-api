@@ -1,12 +1,14 @@
 import { omit } from 'lodash';
 import { startService, stopService } from '../../application';
-import { getTransaction  } from '../../db/db';
+import {clearAllRows, getOrCreateDb, getTransaction} from '../../db/db';
 import { Server } from '@hapi/hapi';
 
 describe('Post amount', () => {
   let server: Server;
   beforeAll(async () => {
     server = await startService();
+    await getOrCreateDb();
+    await clearAllRows();
   });
   afterAll(async () => {
     await stopService();
@@ -14,7 +16,7 @@ describe('Post amount', () => {
   describe('call endpoint', () => {
     describe('with correct header', () => {
       const correct_headers = {
-        'Transaction-Id': '7943f961-a733-43cf-ba3d-905a5856f6da'
+        'Transaction-Id': '7941f961-a733-43cf-ba3d-905a5856f6da'
       };
       describe('with correct payload', () => {
         const correct_payload = { account_id: '7943f961-a733-43cf-ba3d-905a5456f6da', amount: 123 };
