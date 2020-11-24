@@ -1,6 +1,6 @@
 import { omit } from 'lodash';
 import { startService, stopService } from '../../application';
-import {clearAllRows, getOrCreateDb, getTransaction} from '../../db/db';
+import { clearAllRows, getOrCreateDb, getTransaction } from '../../db/db';
 import { Server } from '@hapi/hapi';
 
 describe('Post amount', () => {

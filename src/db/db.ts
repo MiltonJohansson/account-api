@@ -35,7 +35,7 @@ export async function clearAllRows() {
   await db.exec('DELETE FROM tbl');
 }
 
-export interface StoredInterface {
+export interface StoredTransaction {
   transaction_id: string;
   account_id: string;
   amount: string;
@@ -50,7 +50,7 @@ interface TransactionToBeStored {
   amount: number;
 }
 
-export async function storeTransaction({transaction_id, account_id, amount}: TransactionToBeStored): Promise<void> {
+export async function storeTransaction({ transaction_id, account_id, amount}: TransactionToBeStored): Promise<void> {
   try {
     const query = 'INSERT INTO tbl VALUES (?, ?, ?, ?, ?, ?)';
     const last_transaction = await getLatestTransaction(account_id);
@@ -69,7 +69,7 @@ export async function storeTransaction({transaction_id, account_id, amount}: Tra
   }
 }
 
-export async function getTransaction(transaction_id: string): Promise<StoredInterface | undefined> {
+export async function getTransaction(transaction_id: string): Promise<StoredTransaction | undefined> {
   try {
     const query = 'SELECT * FROM tbl WHERE transaction_id = ?';
     return await (await getOrCreateDb()).get(query, transaction_id);
@@ -79,7 +79,7 @@ export async function getTransaction(transaction_id: string): Promise<StoredInte
   }
 }
 
-export async function getLatestTransaction(account_id: string): Promise<StoredInterface | undefined> {
+export async function getLatestTransaction(account_id: string): Promise<StoredTransaction | undefined> {
   try {
     const query = 'SELECT * FROM tbl WHERE account_id = ? ORDER BY created_at DESC LIMIT 1';
     return await (await getOrCreateDb()).get(query, account_id);
@@ -89,7 +89,7 @@ export async function getLatestTransaction(account_id: string): Promise<StoredIn
   }
 }
 
-export async function getMaximumNumberOfTransactions(): Promise<StoredInterface[]> {
+export async function getMaximumNumberOfTransactions(): Promise<StoredTransaction[]> {
   try {
     const query = 'SELECT * FROM tbl WHERE number_of_transactions = (SELECT MAX(number_of_transactions) FROM tbl)';
     return await (await getOrCreateDb()).all(query);

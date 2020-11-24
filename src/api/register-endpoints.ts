@@ -5,8 +5,8 @@ import {
   validatePostAmountRequest,
   validateGetTransactionResponse, validateGetBalanceResponse, validateGetMaximumTransactionsResponse,
 } from '../validate/validation';
-import {getLatestTransaction, getMaximumNumberOfTransactions, getTransaction, storeTransaction} from '../db/db';
-import {pick} from 'lodash';
+import { getLatestTransaction, getMaximumNumberOfTransactions, getTransaction, storeTransaction } from '../db/db';
+import { pick } from 'lodash';
 
 export async function registerEndpoints(server: Server) {
   server.route({
@@ -80,7 +80,7 @@ const handlePostAmount = async ({payload, headers}: Request, h: ResponseToolkit)
   }
 };
 
-const handleGetTransaction = async ({params: {transaction_id}}: Request, h: ResponseToolkit) => {
+const handleGetTransaction = async ({ params: { transaction_id } }: Request, h: ResponseToolkit) => {
   try {
     const transaction = await getTransaction(transaction_id);
     return h.response(pick(transaction, ['account_id', 'amount'])).code(200);
@@ -90,7 +90,7 @@ const handleGetTransaction = async ({params: {transaction_id}}: Request, h: Resp
   }
 };
 
-const handleGetAccountBalance = async ({params: {account_id}}: Request, h: ResponseToolkit) => {
+const handleGetAccountBalance = async ({ params: { account_id } }: Request, h: ResponseToolkit) => {
   try {
     const latest_transaction = await getLatestTransaction(account_id);
     return h.response(pick(latest_transaction, ['balance'])).code(200);

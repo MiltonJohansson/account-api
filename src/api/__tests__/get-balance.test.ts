@@ -1,5 +1,5 @@
 import { startService, stopService } from '../../application';
-import {clearAllRows, getOrCreateDb, storeTransaction} from '../../db/db';
+import { clearAllRows, getOrCreateDb, storeTransaction } from '../../db/db';
 import { Server } from "@hapi/hapi";
 
 describe('Get balance', () => {
