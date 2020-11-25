@@ -1,12 +1,11 @@
 import { startService, stopService } from '../../application';
-import { clearAllRows, getOrCreateDb, storeTransaction } from '../../db/db';
-import { Server } from "@hapi/hapi";
+import { clearAllRows, storeTransaction } from '../../db/db';
+import { Server } from '@hapi/hapi';
 
 describe('Get balance', () => {
   let server: Server;
   beforeAll(async () => {
     server = await startService();
-    await getOrCreateDb();
     await clearAllRows();
   });
   afterAll(async () => {
@@ -21,20 +20,32 @@ describe('Get balance', () => {
       };
       describe('with two identical transactions and one deducting', () => {
         beforeEach(async () => {
-          await storeTransaction({ transaction_id: transaction.transaction_id, account_id: transaction.account_id, amount: transaction.amount });
-          await storeTransaction({ transaction_id: transaction.transaction_id, account_id: transaction.account_id, amount: transaction.amount });
-          await storeTransaction({ transaction_id: '1943f961-a733-43cf-ba3d-905a5856f6da', account_id: transaction.account_id, amount: -2 });
+          await storeTransaction({
+            transaction_id: transaction.transaction_id,
+            account_id: transaction.account_id,
+            amount: transaction.amount,
+          });
+          await storeTransaction({
+            transaction_id: '1943f961-a733-43cf-ba3d-905a5257f6da',
+            account_id: transaction.account_id,
+            amount: transaction.amount,
+          });
+          await storeTransaction({
+            transaction_id: '1943f961-a733-43cf-ba3d-905a5856f6da',
+            account_id: transaction.account_id,
+            amount: -2,
+          });
         });
         it('should return 200 and balance deducted from first transaction', async () => {
-          const first_result = await server.inject({method: 'GET', url: `/balance/${transaction.account_id}`});
+          const first_result = await server.inject({ method: 'GET', url: `/balance/${transaction.account_id}` });
           expect(first_result.statusCode).toEqual(200);
-          expect(first_result.result).toEqual({balance: 5});
+          expect(first_result.result).toEqual({ balance: 5 });
         });
       });
     });
     describe('with incorrect params', () => {
       it('should return 400', async () => {
-        const res = await server.inject({method: 'GET', url: `/balance/${123}`});
+        const res = await server.inject({ method: 'GET', url: `/balance/${123}` });
         expect(res.statusCode).toEqual(400);
       });
     });

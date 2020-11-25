@@ -2,9 +2,10 @@ import {
   clearAllRows,
   disconnect,
   getLatestTransaction,
-  getMaximumNumberOfTransactions, getOrCreateDb,
+  getMaximumNumberOfTransactions,
+  getOrCreateDb,
   getTransaction,
-  storeTransaction
+  storeTransaction,
 } from '../db';
 import { omit } from 'lodash';
 
@@ -62,8 +63,7 @@ describe('Test database', () => {
     });
     it('should get latest transaction with right balance', async () => {
       const transaction = await getLatestTransaction(account_one);
-      expect(transaction!.balance).toEqual(
-        transaction_two_account_one.amount + transaction_one_account_one.amount);
+      expect(transaction!.balance).toEqual(transaction_two_account_one.amount + transaction_one_account_one.amount);
     });
     it('should get latest transaction with right number_of_transactions', async () => {
       const transaction = await getLatestTransaction(account_one);
@@ -71,8 +71,9 @@ describe('Test database', () => {
     });
     it('should get maximum number of transactions and which accounts', async () => {
       const transactions = await getMaximumNumberOfTransactions();
-      expect(transactions!.map(transaction => omit(transaction, ['balance', 'number_of_transactions', 'created_at'])))
-        .toEqual([transaction_two_account_one, transaction_two_account_two]);
+      expect(
+        transactions!.map((transaction) => omit(transaction, ['balance', 'number_of_transactions', 'created_at'])),
+      ).toEqual([transaction_two_account_one, transaction_two_account_two]);
     });
   });
 });
