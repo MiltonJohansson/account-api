@@ -1,15 +1,14 @@
 import { startService, stopService } from '../../application';
-import { clearAllRows, getOrCreateDb, storeTransaction } from '../../db/db';
+import { clearAllRows, storeTransaction } from '../../db/db';
 import { Server } from '@hapi/hapi';
 
 describe('Get maximum transaction volume', () => {
   let server: Server;
-  beforeAll( async() => {
+  beforeAll(async () => {
     server = await startService();
-    await getOrCreateDb();
     await clearAllRows();
   });
-  afterAll( async() => {
+  afterAll(async () => {
     await stopService();
   });
   describe('call endpoint', () => {
@@ -47,8 +46,8 @@ describe('Get maximum transaction volume', () => {
     beforeEach(async () => {
       await storeTransaction(transaction_two_account_two);
     });
-    it('should return 200 and correct response', async() => {
-      const res = await server.inject({ method: 'GET', url: '/max_transaction_volume'  });
+    it('should return 200 and correct response', async () => {
+      const res = await server.inject({ method: 'GET', url: '/max_transaction_volume' });
       expect(res.statusCode).toEqual(200);
       expect(res.result).toEqual({ maxVolume: 2, accounts: [account_one, account_two] });
     });

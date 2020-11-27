@@ -1,9 +1,11 @@
-import {Server, Request, ResponseToolkit} from '@hapi/hapi';
+import { Server, Request, ResponseToolkit } from '@hapi/hapi';
 import {
   validateGetAccountBalance,
   validateGetTransaction,
   validatePostAmountRequest,
-  validateGetTransactionResponse, validateGetBalanceResponse, validateGetMaximumTransactionsResponse,
+  validateGetTransactionResponse,
+  validateGetBalanceResponse,
+  validateGetMaximumTransactionsResponse,
 } from '../validate/validation';
 import { getLatestTransaction, getMaximumNumberOfTransactions, getTransaction, storeTransaction } from '../db/db';
 import { pick } from 'lodash';
@@ -12,7 +14,7 @@ export async function registerEndpoints(server: Server) {
   server.route({
     method: 'GET',
     path: '/ping',
-    handler: handlePing
+    handler: handlePing,
   });
   server.route({
     method: 'POST',
@@ -20,7 +22,7 @@ export async function registerEndpoints(server: Server) {
     handler: handlePostAmount,
     options: {
       validate: validatePostAmountRequest(),
-    }
+    },
   });
   server.route({
     method: 'GET',
@@ -30,9 +32,9 @@ export async function registerEndpoints(server: Server) {
       validate: validateGetTransaction(),
       response: {
         schema: validateGetTransactionResponse(),
-        failAction: 'error'
-      }
-    }
+        failAction: 'error',
+      },
+    },
   });
 
   server.route({
@@ -43,9 +45,9 @@ export async function registerEndpoints(server: Server) {
       validate: validateGetAccountBalance(),
       response: {
         schema: validateGetBalanceResponse(),
-        failAction: 'error'
-      }
-    }
+        failAction: 'error',
+      },
+    },
   });
 
   server.route({
@@ -55,27 +57,25 @@ export async function registerEndpoints(server: Server) {
     options: {
       response: {
         schema: validateGetMaximumTransactionsResponse(),
-        failAction: 'error'
-      }
-    }
+        failAction: 'error',
+      },
+    },
   });
-};
+}
 
 const handlePing = async (_req: Request, h: ResponseToolkit) => {
   return h.response({}).code(200);
 };
 
-
-const handlePostAmount = async ({payload, headers}: Request, h: ResponseToolkit) => {
+const handlePostAmount = async ({ payload, headers }: Request, h: ResponseToolkit) => {
   try {
     await storeTransaction({
       transaction_id: headers['transaction-id'],
       account_id: (payload as any).account_id,
-      amount: (payload as any).amount
+      amount: (payload as any).amount,
     });
     return h.response({}).code(200);
-  }
-  catch (error) {
+  } catch (error) {
     throw error;
   }
 };
@@ -84,8 +84,7 @@ const handleGetTransaction = async ({ params: { transaction_id } }: Request, h: 
   try {
     const transaction = await getTransaction(transaction_id);
     return h.response(pick(transaction, ['account_id', 'amount'])).code(200);
-  }
-  catch (error) {
+  } catch (error) {
     throw error;
   }
 };
@@ -94,23 +93,20 @@ const handleGetAccountBalance = async ({ params: { account_id } }: Request, h: R
   try {
     const latest_transaction = await getLatestTransaction(account_id);
     return h.response(pick(latest_transaction, ['balance'])).code(200);
-  }
-  catch (error) {
+  } catch (error) {
     throw error;
   }
 };
 
 const handleGetMaximumTransactionVolume = async (_req: Request, h: ResponseToolkit) => {
-    try {
-      const maximum_transactions = await getMaximumNumberOfTransactions();
-      const response = {
-        maxVolume: maximum_transactions[0].number_of_transactions,
-        accounts: maximum_transactions.map((transaction: any) => transaction.account_id)
-      };
-      return h.response(response).code(200);
-    }
-    catch (error) {
-      throw error;
-    }
+  try {
+    const maximum_transactions = await getMaximumNumberOfTransactions();
+    const response = {
+      maxVolume: maximum_transactions[0].number_of_transactions,
+      accounts: maximum_transactions.map((transaction: any) => transaction.account_id),
+    };
+    return h.response(response).code(200);
+  } catch (error) {
+    throw error;
   }
-;
+};
