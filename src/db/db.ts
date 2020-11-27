@@ -17,6 +17,7 @@ export async function getOrCreateDb(): Promise<Database> {
     await db.exec(
       'CREATE TABLE IF NOT EXISTS tbl(transaction_id type UNIQUE, account_id TEXT, amount NUMBER, balance NUMBER, number_of_transactions NUMBER, created_at NUMBER)',
     );
+    await db.exec('CREATE UNIQUE INDEX IF NOT EXISTS account_index ON tbl (account_id, transaction_id)');
     return db;
   } catch (error) {
     throw new Error('Failed to create DB');
